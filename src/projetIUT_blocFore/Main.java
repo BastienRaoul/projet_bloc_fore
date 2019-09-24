@@ -1,4 +1,4 @@
-package org.projet_iut.bloc_fore;
+package projetIUT_blocFore;
 
 import java.io.Console;
 import java.io.File;
@@ -21,7 +21,7 @@ public class Main {
 	public static void readFile() throws FileNotFoundException {
 		try {
 //          System.out.print("Enter the file name with extension : ");            
-            input = new Scanner("/home/e174687c/Réseau/Perso/Documents/LP MiAR/projet_bloc_fore/src/org/projet_iut/bloc_fore/TextSample.txt");
+            input = new Scanner("/home/e174687c/Réseau/Perso/Documents/LP MiAR/projet_bloc_fore/src/projetIUT_blocFore/TextSample.txt");
             file = new File(input.nextLine());    
         } catch (Exception ex) {
             ex.printStackTrace();
