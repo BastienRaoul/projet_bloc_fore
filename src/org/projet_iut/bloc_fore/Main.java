@@ -1,8 +1,13 @@
 package org.projet_iut.bloc_fore;
 
+import java.io.Console;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Main {
 	private static Scanner input;
@@ -10,48 +15,51 @@ public class Main {
 		
 	public static void main(String[] args) throws FileNotFoundException {	
 		readFile();
-		System.out.println(verifStructureFile());
+		verifStructureFile();
 	}
 	
-	public static void readFile() {
-	// /home/e174687c/Réseau/Perso/Documents/LP MiAR/projet_bloc_fore/src/org/projet_iut/bloc_fore/TextSample.txt
+	public static void readFile() throws FileNotFoundException {
 		try {
-//            System.out.print("Enter the file name with extension : ");
-            
+//          System.out.print("Enter the file name with extension : ");            
             input = new Scanner("/home/e174687c/Réseau/Perso/Documents/LP MiAR/projet_bloc_fore/src/org/projet_iut/bloc_fore/TextSample.txt");
-
             file = new File(input.nextLine());    
         } catch (Exception ex) {
             ex.printStackTrace();
         }
 	}
 	
-	public static Boolean verifStructureFile() throws FileNotFoundException {
+	public static void verifStructureFile() throws FileNotFoundException {
 		input = new Scanner(file);
-		int nbLine = 0;
-		Boolean validiteFileBoolean = true;
-		String[] tabFile;
+		ArrayList<String> lignes = new ArrayList<String>();
+		ArrayList<String> resultat = new ArrayList<String>();
 		
-//		while (input.hasNextLine()) {
-//            String line = input.nextLine();
-//            System.out.println(line);
-//        }
+		while (input.hasNextLine()) { lignes.add(input.nextLine()); }
 		
-		while (input.hasNextLine()) { 
-			String line = input.nextLine();
-			nbLine++; 
-		}
-		
-		for(int i=0; i < nbLine; i++) {
-			if(i == 0) {
-				String regExp = "[0-9]+;+[0-9]+;+[0-9]";
-//				String line = input.nextLine();
-//				validiteFileBoolean = line.matches(regExp);
-				
+        if(!Pattern.compile("([0-9]+\\s*[;]\\s*){2}[0-9]+").matcher(lignes.get(0)).find()) {
+        	resultat.add("Erreur de syntaxe -> " + lignes.get(0));
+        }
+        
+        Boolean face = false;
+		for (String ligne : lignes) {
+			if(face) {
+				if(Pattern.compile("[A-Z]+[0-9]").matcher(ligne).find()) {
+					if (!Pattern.compile("([0-9]+\\s*[,]\\s*){4}[0-9]+").matcher(ligne).find()){
+						resultat.add("Erreur de syntaxe -> " + ligne);
+					}
+				} else if (!Pattern.compile("([0-9]+\\s*[,]\\s*){4}[0-9]+").matcher(ligne).find()){
+					resultat.add("Erreur de syntaxe -> " + ligne);
+				}
+			} else {
+				if(Pattern.compile("[A-Z]+[0-9]").matcher(ligne).find()) {
+					face = true;
+				} else {
+					resultat.add("Erreur de syntaxe -> " + ligne);
+				}
 			}
 		}
+		
+		System.out.println(resultat);
 		input.close();
-		return validiteFileBoolean;
 	}
 
 }
