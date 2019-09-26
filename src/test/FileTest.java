@@ -13,22 +13,22 @@ import java.io.FileNotFoundException;
 public class FileTest {
 	private JFileChooser dialogue;
 	private ScannerFile scannerFile;
-	
+
 	@BeforeEach
 	void getFile() {
-	    dialogue = new JFileChooser(); 
-        dialogue.showOpenDialog(null);   
-        scannerFile = new ScannerFile(dialogue.getSelectedFile().toString());   
+		dialogue = new JFileChooser();
+		dialogue.showOpenDialog(null);
+		scannerFile = new ScannerFile(dialogue.getSelectedFile().toString());
 	}
 
 	@Test
 	@Disabled
-	void scanFileValid() {		
+	void scanFileValid() {
 		assertTrue(scannerFile.getFile().canExecute());
 	}
-	
-    @Test
-    @Disabled
+
+	@Test
+	@Disabled
 	void structureFile() {
 		try {
 			System.out.println(scannerFile.verifStructureFile());
@@ -36,8 +36,8 @@ public class FileTest {
 			e.printStackTrace();
 		}
 	}
-    
-    @Test
+
+	@Test
 	void structureFileValid() {
 		try {
 			assertTrue(!scannerFile.verifStructureFile().isEmpty());
@@ -45,8 +45,8 @@ public class FileTest {
 			e.printStackTrace();
 		}
 	}
-    
-    @Test
+
+	@Test
 	void structureFileNotValid() {
 		try {
 			assertFalse(scannerFile.verifStructureFile().isEmpty());
