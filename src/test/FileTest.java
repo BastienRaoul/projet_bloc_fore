@@ -3,17 +3,20 @@ package test;
 import projetIUT_blocFore.ScannerFile;
 
 import org.junit.*;
+
 import javax.swing.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.*;
+
 import java.io.FileNotFoundException;
 
 public class FileTest {
 	private JFileChooser dialogue;
 	private ScannerFile scannerFile;
-
+	
 	@BeforeEach
 	void getFile() {
 		dialogue = new JFileChooser();
@@ -22,7 +25,6 @@ public class FileTest {
 	}
 
 	@Test
-	@Disabled
 	void scanFileValid() {
 		assertTrue(scannerFile.getFile().canExecute());
 	}
@@ -38,6 +40,7 @@ public class FileTest {
 	}
 
 	@Test
+	@Disabled
 	void structureFileValid() {
 		try {
 			assertTrue(!scannerFile.verifStructureFile().isEmpty());
@@ -47,6 +50,7 @@ public class FileTest {
 	}
 
 	@Test
+	@Disabled
 	void structureFileNotValid() {
 		try {
 			assertFalse(scannerFile.verifStructureFile().isEmpty());

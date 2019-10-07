@@ -3,7 +3,6 @@ package projetIUT_blocFore;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
@@ -27,11 +26,32 @@ public class ScannerFile {
 			ex.printStackTrace();
 		}
 	}
-
+ 
+	/**
+	 * 
+	 * @return the file
+	 */
 	public File getFile() {
 		return file;
 	}
+	
+	/**
+	 * 
+	 * @return a boolean allowing to know if the file is written correctly
+	 * @throws FileNotFoundException
+	 */
+	public Boolean validStructure() throws FileNotFoundException {
+		Boolean result = false;
+		ArrayList<String> text = verifStructureFile();
+		result = text.isEmpty() ? true : false;
+		return result;
+	}
 
+	/**
+	 * 
+	 * @return an ArrayList with every line of the file
+	 * @throws FileNotFoundException
+	 */
 	public ArrayList<String> getLignes() throws FileNotFoundException {
 		ArrayList<String> lignes = new ArrayList<String>();
 		input = new Scanner(file);
@@ -39,6 +59,11 @@ public class ScannerFile {
 		return lignes;
 	}
 
+	/**
+	 * 
+	 * @return an ArrayList with the errors in the file
+	 * @throws FileNotFoundException
+	 */
 	public ArrayList<String> verifStructureFile() throws FileNotFoundException {
 		input = new Scanner(file);
 		ArrayList<String> lignes = getLignes();
@@ -76,22 +101,22 @@ public class ScannerFile {
 
 		}
 		if (!face6) {
-			resultat.add(0, "Face 6 non déclaré");
+			resultat.add(0, "Face 6 non dÃ©clarÃ©");
 		}
 		if (!face5) {
-			resultat.add(0, "Face 5 non déclaré");
+			resultat.add(0, "Face 5 non dÃ©clarÃ©");
 		}
 		if (!face4) {
-			resultat.add(0, "Face 4 non déclaré");
+			resultat.add(0, "Face 4 non dÃ©clarÃ©");
 		}
 		if (!face3) {
-			resultat.add(0, "Face 3 non déclaré");
+			resultat.add(0, "Face 3 non dÃ©clarÃ©");
 		}
 		if (!face2) {
-			resultat.add(0, "Face 2 non déclaré");
+			resultat.add(0, "Face 2 non dÃ©clarÃ©");
 		}
 		if (!face1) {
-			resultat.add(0, "Face 1 non déclaré");
+			resultat.add(0, "Face 1 non dÃ©clarÃ©");
 		}
 
 		input.close();
