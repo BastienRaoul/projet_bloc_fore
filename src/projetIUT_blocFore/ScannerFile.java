@@ -16,7 +16,7 @@ public class ScannerFile {
 	private Boolean face4 = false;
 	private Boolean face5 = false;
 	private Boolean face6 = false;
-	private Bloc bloc;
+	private Block block;
 
 	public ScannerFile(String path) {
 		try {

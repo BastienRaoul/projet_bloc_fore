@@ -49,9 +49,9 @@ public class Face {
 			for (int j = 0; j < drillings.size(); j++) {
 				if (i != j) {
 					Drilling otherDrill = drillings.get(j);
-					float centersEspacement = (float) Math.sqrt(
-							Math.pow(drilling.getFaceCoords()[0] - otherDrill.getFaceCoords()[0], 2) +
-							Math.pow(drilling.getFaceCoords()[1] - otherDrill.getFaceCoords()[1], 2)
+					float centersEspacement = Utils.getDistance(
+							drilling.getFaceCoords()[0], otherDrill.getFaceCoords()[0],
+							drilling.getFaceCoords()[1], otherDrill.getFaceCoords()[1]
 					);
 					float drillingsEspacement = centersEspacement - drilling.getDiameter()/2 - otherDrill.getDiameter()/2;
 					if (drillingsEspacement < MIN_DRILL_ESPACEMENT) {
@@ -69,7 +69,7 @@ public class Face {
 		
 		for (int i = 0; i < drillings.size(); i++) {
 			Drilling drilling = drillings.get(i);
-			if (drilling.getFaceCoords()[2] > 0) { // If a drilling inside the block
+			if (drilling.getFaceCoords()[2] > 0) { // If a drilling is inside the block
 				if (!hasParentDrilling(drilling)) {
 					errors += drilling.toString() + " starts inside the block without \"parent drilling\"";
 				}
@@ -80,7 +80,27 @@ public class Face {
 	}
 	
 	private boolean hasParentDrilling(Drilling drilling) {
-		
+		for (int i = 0; i < drillings.size(); i++) {
+			Drilling parent = drillings.get(i);
+			if (parent != drilling) {
+				
+				// Does the parent encompass the current drilling ?
+				float[] dCoords = drilling.getFaceCoords();
+				float[] pCoords = parent.getFaceCoords();
+				
+				// distBtwCenters + child radius < parent radius
+				if (Utils.getDistance(dCoords[0], dCoords[1], pCoords[0], pCoords[1]) + drilling.getDiameter()/2 < parent.getDiameter()/2) { 
+					// Test if parent's z coord start before child's one and reaches it
+					if (pCoords[2] < dCoords[2] && pCoords[2] + parent.getDepth() > dCoords[2]) {
+						if (pCoords[2] < 0) { // The parent doesn't start inside the block
+							return true;
+						} else {
+							return hasParentDrilling(parent);
+						}
+					}
+				}
+			}
+		}
 		return false;
 	}
 	

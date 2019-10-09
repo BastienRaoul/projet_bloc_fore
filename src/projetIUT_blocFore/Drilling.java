@@ -21,7 +21,6 @@ public class Drilling {
 		this.diameter = diameter;
 		absCoords = convertFaceToAbsCoords();
 	}
-
 	
 	private float[] convertFaceToAbsCoords() {
 		float[] coords = faceCoords;
