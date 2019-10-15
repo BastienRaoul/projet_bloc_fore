@@ -9,6 +9,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import mock.DrillingInterface;
@@ -22,22 +23,7 @@ class FaceTest {
 	
 	@BeforeAll
 	static void setUpBeforeClass() throws Exception {
-		
 		face = new Face(50, 50, 0, 0, 0);
-
-		/* Tests manquants
-			
-			// To test depth
-		drillings.add(new DrillingMock(20, 20, 10, 50, 1));		// Has no parent
-		drillings.add(new DrillingMock(25, 20, 50, 30, 1));		// Another drill (the next one) encompass it but doesn't reach it
-		drillings.add(new DrillingMock(25, 20, 0, 30, 2));
-		drillings.add(new DrillingMock(30, 20, 30, 30, 1));		// encompassed by an excentred drill
-		drillings.add(new DrillingMock(30, 18, 0, 40, 6));
-		drillings.add(new DrillingMock(35, 20, 30, 30, 2));		// reached by another drill but smaller
-		drillings.add(new DrillingMock(35, 20, 0, 40, 1));
-		drillings.add(new DrillingMock(30, 30, 50, 40, 1)); 	// A drilling with 2 parents
-		drillings.add(new DrillingMock(30, 30, 30, 20, 2));
-		drillings.add(new DrillingMock(30, 30, 0, 30, 3));*/
 	}
 
 	/*@AfterAll
@@ -185,7 +171,72 @@ class FaceTest {
 		
 		String errMsg = face.verifyCoplanarDrillings();
 		//System.out.println("errMsg : " + errMsg);
-		assertTrue(errMsg.equals(""), "Drilling belongs to the face");
+		assertTrue(errMsg.equals(""), "The drilling belongs to the face");
 	}
 
+	@Test
+	void noParentTest() {
+		
+		drillings.add(new DrillingMock(20, 20, 10, 50, 1));
+		face.addDrillings(drillings);
+		
+		String errMsg = face.verifyCoplanarDrillings();
+		//System.out.println("errMsg : " + errMsg);
+		assertTrue(errMsg.equals("\n[Depth] (20, 20, 10, 50, 1) starts inside the block without \"parent drilling\""), "The drilling starts inside the block without parent");
+	}
+	
+	//xavier.aime@univ-nantes.fr
+	
+	@Test
+	void encompassButNotReachTest() {
+		
+		drillings.add(new DrillingMock(25, 20, 50, 30, 1));		
+		drillings.add(new DrillingMock(25, 20, 0, 30, 2));
+		face.addDrillings(drillings);
+		
+		String errMsg = face.verifyCoplanarDrillings();
+		//System.out.println("errMsg : " + errMsg);
+		assertTrue(errMsg.equals("\n[Depth] (25, 20, 50, 30, 1) starts inside the block without \"parent drilling\""), "Another drilling encompass the first one but doesn't reach it");
+	}
+	
+	@Test
+	void excentredEncompassTest() {
+		
+		drillings.add(new DrillingMock(30, 20, 30, 30, 1));
+		drillings.add(new DrillingMock(30, 18, 0, 40, 6));
+		face.addDrillings(drillings);
+		
+		String errMsg = face.verifyCoplanarDrillings();
+		//System.out.println("errMsg : " + errMsg);
+		assertTrue(errMsg.equals(""), "Encompassed by an excentred drill");
+	}
+	
+	@Test
+	void reachedBySmallerDrillTest() {
+		
+		drillings.add(new DrillingMock(35, 20, 30, 30, 2));
+		drillings.add(new DrillingMock(35, 20, 0, 40, 1));
+		face.addDrillings(drillings);
+		
+		String errMsg = face.verifyCoplanarDrillings();
+		//System.out.println("errMsg : " + errMsg);
+		assertTrue(errMsg.equals("\n[Depth] (35, 20, 30, 30, 2) starts inside the block without \"parent drilling\""), "An inside drilling is reached by a smaller one");
+	}
+	
+	@Test
+	void multiParentedTest() {
+		
+		drillings.add(new DrillingMock(30, 30, 0, 10, 6));
+		drillings.add(new DrillingMock(30, 30, 10, 5, 5));
+		drillings.add(new DrillingMock(30, 30, 15, 15, 4));
+		drillings.add(new DrillingMock(30, 30, 30, 8, 3));
+		drillings.add(new DrillingMock(30, 30, 38, 2, 2));
+		drillings.add(new DrillingMock(30, 30, 40, 5, 1)); 
+		
+		face.addDrillings(drillings);
+		
+		String errMsg = face.verifyCoplanarDrillings();
+		//System.out.println("errMsg : " + errMsg);
+		assertTrue(errMsg.equals(""), "The drilling is parented by many others");
+	}
 }

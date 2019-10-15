@@ -52,18 +52,30 @@ public class Face {
 			for (int j = i+1; j < drillings.size(); j++) {
 				DrillingInterface otherDrill = drillings.get(j);
 				float centersEspacement = Utils.getDistance(
-					drilling.getFaceCoords()[0], otherDrill.getFaceCoords()[0],
-					drilling.getFaceCoords()[1], otherDrill.getFaceCoords()[1]
+					drilling.getFaceCoords()[0], drilling.getFaceCoords()[1],
+					otherDrill.getFaceCoords()[0], otherDrill.getFaceCoords()[1]
 				);
 				//System.out.println("Dist btwn " + drilling.toString() + "/" + otherDrill.toString() + "\n = " + centersEspacement);
 				float drillingsEspacement = centersEspacement - drilling.getDiameter()/2 - otherDrill.getDiameter()/2;
-				if (drillingsEspacement < MIN_DRILL_ESPACEMENT) {
-					errors += "\n[Espacement] " + drilling.toString() + " with " + otherDrill.toString();
+				if (drillingsEspacement < MIN_DRILL_ESPACEMENT) { // If drillings are too close
+					if (!areEncompassed(drilling, otherDrill, centersEspacement)) {
+						errors += "\n[Espacement] " + drilling.toString() + " with " + otherDrill.toString();
+					}
 				}
 			}
 		}
 		
 		return errors;
+	}
+	
+	private boolean areEncompassed(DrillingInterface drilling, DrillingInterface otherDrill, float espacement) {
+	// True if a radius is greater than the sum of the other radius and the espacement
+		float r1 = drilling.getDiameter()/2;
+		float r2 = otherDrill.getDiameter()/2;
+		if (r1 >= r2 + espacement || r2 >= r1 + espacement) {
+			return true;
+		}
+		return false;
 	}
 	
 	private String verifyDepth() {
@@ -90,10 +102,12 @@ public class Face {
 				int[] dCoords = drilling.getFaceCoords();
 				int[] pCoords = parent.getFaceCoords();
 				
-				// distBtwCenters + child radius < parent radius
-				if (Utils.getDistance(dCoords[0], dCoords[1], pCoords[0], pCoords[1]) + drilling.getDiameter()/2 < parent.getDiameter()/2) { 
+				// distBtwCenters + child radius < parent radius  --> like 'areEncompassed()' but not reciprocally
+				float espacement = Utils.getDistance(dCoords[0], dCoords[1], pCoords[0], pCoords[1]);
+				//(can't use 'areEncompassed()' because the child doesn't have to encompass its parent
+				if (espacement + (float) drilling.getDiameter()/2 < (float) parent.getDiameter()/2) { 
 					// Test if parent's z coord start before child's one and reaches it
-					if (pCoords[2] < dCoords[2] && pCoords[2] + parent.getDepth() > dCoords[2]) {
+					if (pCoords[2] < dCoords[2] && pCoords[2] + parent.getDepth() >= dCoords[2]) {
 						if (pCoords[2] <= 0) { // The parent doesn't start inside the block
 							return true;
 						} else {
