@@ -1,15 +1,14 @@
 package projetIUT_blocFore;
 
 import java.util.Arrays;
-import java.util.Vector;
 
 public class Block {
-	private float[] dimensions = new float[3];
+	private int[] dimensions = new int[3];
 	private Face[] faces = new Face[6]; //[front, right, back, left, top, bottom]
 	private IntersectionFace[] intersectionFaces = new IntersectionFace[12];
 	private boolean[][] isIntersectionCreated = new boolean[6][6];
 	
-	public Block(float x, float y, float z) {
+	public Block(int x, int y, int z) {
 		dimensions[0] = x;
 		dimensions[1] = y;
 		dimensions[2] = z;
@@ -75,7 +74,7 @@ public class Block {
 		return true;
 	}
 	
-	public float[] getDimensions() {
+	public int[] getDimensions() {
 		return dimensions;
 	}
 }

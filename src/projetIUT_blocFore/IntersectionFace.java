@@ -3,11 +3,13 @@ package projetIUT_blocFore;
 import java.util.Arrays;
 import java.util.List;
 
+import mock.DrillingInterface;
+
 public class IntersectionFace {
 	private Face faceX;
-	private List<Drilling> drillingsX;
+	private List<DrillingInterface> drillingsX;
 	private Face faceY;
-	private List<Drilling> drillingsY;
+	private List<DrillingInterface> drillingsY;
 	private int[][] intersections; // Values : 0 = no intersection ; 1 = intersection ; -1 = not defined
 
 	public IntersectionFace(Face faceX, Face faceY) {

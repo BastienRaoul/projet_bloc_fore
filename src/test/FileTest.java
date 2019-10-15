@@ -30,7 +30,7 @@ public class FileTest {
 	}
 
 	@Test
-	@Disabled
+	//@Disabled
 	void structureFile() {
 		try {
 			System.out.println(scannerFile.verifStructureFile());
@@ -40,7 +40,7 @@ public class FileTest {
 	}
 
 	@Test
-	@Disabled
+	//@Disabled
 	void structureFileValid() {
 		try {
 			assertTrue(!scannerFile.verifStructureFile().isEmpty());
@@ -50,7 +50,7 @@ public class FileTest {
 	}
 
 	@Test
-	@Disabled
+	//@Disabled
 	void structureFileNotValid() {
 		try {
 			assertFalse(scannerFile.verifStructureFile().isEmpty());

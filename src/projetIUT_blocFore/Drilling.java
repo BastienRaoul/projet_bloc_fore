@@ -3,17 +3,19 @@ package projetIUT_blocFore;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Drilling {
+import mock.DrillingInterface;
+
+public class Drilling implements DrillingInterface {
 	
 	private Block block;
 	private Face face;
-	private float[] faceCoords = new float[3];
-	private float[] absCoords = new float[3];
-	private float depth;
-	private float diameter;
+	private int[] faceCoords = new int[3];
+	private int[] absCoords = new int[3];
+	private int depth;
+	private int diameter;
 	private List<Drilling> testedDrillingsIntersects = new ArrayList<Drilling>(); // With which drillings this one has been tested
 	
-	public Drilling(Block block, Face face, float[] faceCoords, float depth, float diameter) {
+	public Drilling(Block block, Face face, int[] faceCoords, int depth, int diameter) {
 		this.block = block;
 		this.face = face;
 		this.faceCoords = faceCoords;
@@ -22,9 +24,9 @@ public class Drilling {
 		absCoords = convertFaceToAbsCoords();
 	}
 	
-	private float[] convertFaceToAbsCoords() {
-		float[] coords = faceCoords;
-		float[] dimBlock = block.getDimensions();
+	private int[] convertFaceToAbsCoords() {
+		int[] coords = faceCoords;
+		int[] dimBlock = block.getDimensions();
 		
 		switch(face.getId()) {
 		// face 0 ignored cause it's the same coordinates
@@ -68,19 +70,19 @@ public class Drilling {
 		return ("(" + faceCoords[0] + ", " + faceCoords[1] + ", " + faceCoords[2] + ") on " + face.toString());
 	}
 	
-	public float[] getFaceCoords() {
+	public int[] getFaceCoords() {
 		return faceCoords;
 	}
 
-	public float[] getAbsCoords() {
+	public int[] getAbsCoords() {
 		return absCoords;
 	}
 
-	public float getDepth() {
+	public int getDepth() {
 		return depth;
 	}
 
-	public float getDiameter() {
+	public int getDiameter() {
 		return diameter;
 	}
 
