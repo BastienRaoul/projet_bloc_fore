@@ -1,3 +1,5 @@
+// dev : Rémi THOMAS
+
 package projetIUT_blocFore;
 
 import java.util.Arrays;
@@ -37,7 +39,7 @@ public class Block {
 		faces[3] = new Face(dimensions[2], dimensions[1], "+", 0/*0, 90, 0*/);
 		
 		// Top face
-		faces[4] = new Face(dimensions[0], dimensions[1], "-", 1/*90, 0, 0*/);
+		faces[4] = new Face(dimensions[0], dimensions[2], "-", 1/*90, 0, 0*/);
 		
 		// Bottom face
 		faces[5] = new Face(dimensions[0], dimensions[2], "+", 1/*-90, 0, 0*/);
@@ -49,9 +51,8 @@ public class Block {
 		int idInter = 0;
 		for (int j = 0; j < faces.length; j++) {
 			for (int i = 0; i < faces.length; i++) {
-				if (areFacesPerpendicular(i, j) && !isIntersectionCreated[i][j]) {
-					intersectionFaces[idInter] = new IntersectionFace(faces[i], faces[j]);
-					idInter++;
+				if (!isIntersectionCreated[i][j]) {
+					intersectionFaces[idInter++] = new IntersectionFace(faces[i], faces[j]);
 					isIntersectionCreated[i][j] = true;
 				}
 			}
@@ -77,14 +78,18 @@ public class Block {
 		return true;*/
 		
 		// If the faces have a different absolute normal they are perpendicular
-		return faces[idFace1].getNormal() != faces[idFace2].getNormal();
+		// We don't need to use Math.abs() because the sign is stored in another attribute (normalDir)
+		return faces[idFace1].getNormal() != faces[idFace2].getNormal(); // If they have the same normal they are opposite faces
 	}
 	
-	public String verifyDrillings() {
-		String errors = "";
+	// {errors, shavings} / inspect means find errors and shavings points
+	public String[] inspectDrillings() {
+		String[] messages = {"", ""};
 		
 		for (Face face : faces) {
-			errors += face.verifyOwnDrillings();
+			String[] inspFace = face.inspectOwnDrillings();
+			messages[0] += inspFace[0];
+			messages[1] += inspFace[1];
 		}
 		
 		
@@ -92,20 +97,24 @@ public class Block {
 			for (Face otherFace : faces) {
 				// Verify intersections between opposite faces
 				if (otherFace != face && !areFacesPerpendicular(face.getId(), otherFace.getId())) {
-					errors += verifyFaceToFaceIntersections(face, otherFace);
+					String[] inspOpp = inspectOppositeIntersections(face, otherFace);
+					messages[0] += inspOpp[0];
+					messages[1] += inspOpp[1];
 				}
 				// Verify intersections between perpendicular faces
 				else if (areFacesPerpendicular(face.getId(), otherFace.getId())) {
-					errors += verifySidesIntersections(face, otherFace);
+					String[] inspPerp = inspectPerpendicularIntersections(face, otherFace);
+					messages[0] += inspPerp[0];
+					messages[1] += inspPerp[1];
 				}
 			}
 		}
 		
-		return errors;
+		return messages;
 	}
 	
-	private String verifyFaceToFaceIntersections(Face f1, Face f2) {
-		String errors = "";
+	private String[] inspectOppositeIntersections(Face f1, Face f2) {
+		String[] messages = {"", ""};
 		
 		for (DrillingInterface drilling : f1.getDrillings()) {
 			for (DrillingInterface otherDrill : f2.getDrillings()) {
@@ -118,24 +127,26 @@ public class Block {
 				float drillingsEspacement = espacement - drilling.getDiameter()/2 - otherDrill.getDiameter()/2;
 				int depthAxis = f1.getNormal();
 				
-				int near = dimensions[depthAxis] - drilling.getDepth() - otherDrill.getDepth(); // Thickness of the block - depth of the drillings
-				near += (f1.getNormalDir().equals("-") ? dCoords[depthAxis] - dimensions[depthAxis] : -dCoords[depthAxis]); // Minus z pos of the drilling
-				near += (f2.getNormalDir().equals("-") ? oCoords[depthAxis] - dimensions[depthAxis] : -oCoords[depthAxis]); // Minus z pos of the other drilling
+				int close = dimensions[depthAxis] - drilling.getDepth() - otherDrill.getDepth(); // Thickness of the block - depth of the drillings
+				close += (f1.getNormalDir().equals("-") ? dCoords[depthAxis] - dimensions[depthAxis] : -dCoords[depthAxis]); // Minus z pos of the drilling
+				close += (f2.getNormalDir().equals("-") ? oCoords[depthAxis] - dimensions[depthAxis] : -oCoords[depthAxis]); // Minus z pos of the other drilling
 				
-				if (drillingsEspacement < MIN_DRILL_ESPACEMENT && near <= 0) {  
-					// If one doesn't encompass the other so that an error
+				if (drillingsEspacement < MIN_DRILL_ESPACEMENT && close <= 0) { // If the otherDrill reaches drilling and is too close to it
+					// If one doesn't encompass the other that's an error
 					if (!Utils.areEncompassed(drilling, otherDrill, espacement)) {
-						errors += "\n[Espacement - Opposite faces] " + drilling.toString() + " with " + otherDrill.toString();
+						messages[0] += "\n[Espacement - Opposite faces] " + drilling.toString() + " with " + otherDrill.toString();
+					} else {
+						messages[1] += "\n" + drilling.toString() + " - " + otherDrill.toString();
 					}
 				}
 			}
 		}
 		
-		return errors;
+		return messages;
 	}
 	
-	private String verifySidesIntersections(Face f1, Face f2) {
-		String errors = "";
+	private String[] inspectPerpendicularIntersections(Face f1, Face f2) {
+		String[] messages = {"", ""};
 		
 		for (DrillingInterface drilling : f1.getDrillings()) {
 			for (DrillingInterface otherDrill : f2.getDrillings()) {
@@ -147,14 +158,16 @@ public class Block {
 						int axisForEspacement = 3 - drilling.getFace().getNormal() - otherDrill.getFace().getNormal(); // the axis that is neither the normal of drilling nor otherDrill
 						int espacement = Math.abs(drilling.getAbsCoords()[axisForEspacement] - otherDrill.getAbsCoords()[axisForEspacement]);
 						if (!Utils.areEncompassed(drilling, otherDrill, espacement)) {
-							errors += "\n[Espacement - Perpendicular faces]" + drilling.toString() + " with " + otherDrill.toString();
+							messages[0] += "\n[Espacement - Perpendicular faces]" + drilling.toString() + " with " + otherDrill.toString();
+						} else {
+							messages[1] += "\n" + drilling.toString() + " - " + otherDrill.toString();
 						}
 					}
 				}
 			}
 		}
 		
-		return errors;
+		return messages;
 	}
 	
 	private boolean areTooClose(DrillingInterface drilling, DrillingInterface otherDrill) {
@@ -194,7 +207,7 @@ public class Block {
 		return false;
 	}
 	
-	// first approach to know if perpendicular drillings were too close
+	// First approach to know if perpendicular drillings were too close
 	/*private boolean isCenterInsideRect(DrillingInterface otherDrill, DrillingInterface drilling) {
 		
 		// Projection

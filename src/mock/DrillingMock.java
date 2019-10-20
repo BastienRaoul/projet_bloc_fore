@@ -1,3 +1,5 @@
+// dev : Rémi THOMAS
+
 package mock;
 
 import projetIUT_blocFore.Face;

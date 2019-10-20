@@ -1,3 +1,5 @@
+// dev : Bastien RAOUL
+
 package projetIUT_blocFore;
 
 import java.io.File;
@@ -19,7 +21,7 @@ public class Main {
 			ScannerFile scannerFile = new ScannerFile(dialogue.getSelectedFile().toString());
 			System.out.println(scannerFile.verifStructureFile());
 		} catch (Exception e) {
-			if(e.getMessage() == null) { System.out.println("Aucun fichier de sÃ©lectionnÃ©"); }
+			if(e.getMessage() == null) { System.out.println("Aucun fichier de sélectionné"); }
 		}		
 	}
 }

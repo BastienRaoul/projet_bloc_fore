@@ -1,3 +1,5 @@
+// dev : Rémi THOMAS
+
 package projetIUT_blocFore;
 
 import java.util.ArrayList;
@@ -10,9 +12,10 @@ public class Face {
 	
 	private static int id = 0;
 	private int[] dimensions;
-	//private int[] rotation = new int[3];
+	//private int[] rotation = new int[3]; // Deprecated
 	private String normalDir; // Direction of the normal (- or +)
 	private int normal; // The normal of the face (0 or 1 or 2 => x, y, z)
+	// Attributes stored separately because -0 means nothing
 	private ArrayList<DrillingInterface> drillings = new ArrayList<>();
 	
 	public Face(int dimX, int dimY, String normalDir, int normal/*int rotX, int rotY, int rotZ*/) {
@@ -27,17 +30,23 @@ public class Face {
 		this.drillings.addAll(drillings);
 	}
 	
-	public String verifyOwnDrillings() {
-		String errors = "";
+	// {errors, shavings} / inspect means find errors and shavings points
+	public String[] inspectOwnDrillings() {
+		String[] messages = {"", ""};
 		
-		errors += verifyEspacement();
-		errors += verifyDepth();
+		String[] inspEsp = inspectEspacement();
+		String[] insDepth = inspectDepth();
 		
-		return errors;
+		messages[0] += inspEsp[0];
+		messages[1] += inspEsp[1];
+		messages[0] += insDepth[0];
+		messages[1] += insDepth[1];
+		
+		return messages;
 	}
 	
-	private String verifyEspacement() {
-		String errors = "";
+	private String[] inspectEspacement() {
+		String[] messages = {"", ""};
 		
 		for (int i = 0; i < drillings.size(); i++) {
 			DrillingInterface drilling = drillings.get(i);
@@ -45,11 +54,11 @@ public class Face {
 			// Verify espacement with edges
 			if (drilling.getFaceCoords()[0] - drilling.getDiameter()/2 < MIN_DRILL_ESPACEMENT ||		// (left and bottom sides)
 					drilling.getFaceCoords()[1] - drilling.getDiameter()/2 < MIN_DRILL_ESPACEMENT) {
-				errors += "\n[Espacement - Same face] " + drilling.toString();
+				messages[0] += "\n[Espacement - Edges] " + drilling.toString();
 			}
 			if (dimensions[0] - (drilling.getFaceCoords()[0] + drilling.getDiameter()/2) < MIN_DRILL_ESPACEMENT ||		// (right and top sides)
 					dimensions[1] - (drilling.getFaceCoords()[1] + drilling.getDiameter()/2) < MIN_DRILL_ESPACEMENT) {
-				errors += "\n[Espacement - Same face] " + drilling.toString();
+				messages[0] += "\n[Espacement - Edges] " + drilling.toString();
 			}
 			
 			// Verify espacement with other drillings
@@ -63,31 +72,44 @@ public class Face {
 				float drillingsEspacement = centersEspacement - drilling.getDiameter()/2 - otherDrill.getDiameter()/2;
 				if (drillingsEspacement < MIN_DRILL_ESPACEMENT) { // If drillings are too close
 					if (!Utils.areEncompassed(drilling, otherDrill, centersEspacement)) {
-						errors += "\n[Espacement - Same face] " + drilling.toString() + " with " + otherDrill.toString();
+						messages[0] += "\n[Espacement - Same face] " + drilling.toString() + " with " + otherDrill.toString(); // error
+					} else {
+						messages[1] += "\n" + drilling.toString() + " - " + otherDrill.toString(); // shavings
 					}
 				}
 			}
 		}
 		
-		return errors;  
+		return messages;  
 	}
 	
-	private String verifyDepth() {
-		String errors = "";
+	private String[] inspectDepth() {
+		String[] messages = {"", ""};
 		
 		for (int i = 0; i < drillings.size(); i++) {
 			DrillingInterface drilling = drillings.get(i);
 			if (drilling.getFaceCoords()[2] > 0) { // If a drilling is inside the block
-				if (!hasParentDrilling(drilling)) {
-					errors += "\n[Depth] " + drilling.toString() + " starts inside the block without \"parent drilling\"";
-				}
+				/*if (!hasParentDrilling(drilling)) {
+					messages[0] += "\n[Depth] " + drilling.toString() + " starts inside the block without \"parent drilling\"";
+				}*/
+				DrillingInterface parent = drilling, childOfParent;
+				do {
+					childOfParent = parent;
+					parent = parentDrilling(drilling);
+					if (parent != null) { 
+						messages[1] += "\n" + childOfParent.toString() + " - " + parent.toString(); // shavings point
+						if (parent.getFaceCoords()[2] <= 0) break; // We just found the last parent
+					} else {
+						messages[0] += "\n[Depth] " + drilling.toString() + " starts inside the block without \"parent drilling\""; // error
+					}
+				} while (parent != null);
 			}
 		}
 		
-		return errors;
+		return messages;
 	}
 	
-	private boolean hasParentDrilling(DrillingInterface drilling) {
+	/*private boolean hasParentDrilling(DrillingInterface drilling) { // This function can't return the shavings points
 		for (int i = 0; i < drillings.size(); i++) {
 			DrillingInterface parent = drillings.get(i);
 			if (parent != drilling) {
@@ -112,6 +134,29 @@ public class Face {
 			}
 		}
 		return false;
+	}*/
+	
+	private DrillingInterface parentDrilling(DrillingInterface drilling) {
+		for (int i = 0; i < drillings.size(); i++) {
+			DrillingInterface parent = drillings.get(i);
+			if (parent != drilling) {
+				
+				// Does the parent encompass the current drilling ?
+				int[] dCoords = drilling.getFaceCoords();
+				int[] pCoords = parent.getFaceCoords();
+				
+				// distBtwCenters + child radius < parent radius  --> like 'areEncompassed()' but not reciprocally
+				float espacement = Utils.getDistance(dCoords[0], dCoords[1], pCoords[0], pCoords[1]);
+				//(can't use 'areEncompassed()' because the child doesn't have to encompass its parent
+				if (espacement + (float) drilling.getDiameter()/2 < (float) parent.getDiameter()/2) { 
+					// Test if parent's z coord start before child's one and reaches it
+					if (pCoords[2] < dCoords[2] && pCoords[2] + parent.getDepth() >= dCoords[2]) {
+						return parent;
+					}
+				}
+			}
+		}
+		return null;
 	}
 	
 	@Override

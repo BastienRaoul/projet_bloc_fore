@@ -1,3 +1,5 @@
+// dev : Rémi THOMAS
+
 package projetIUT_blocFore;
 
 import java.util.ArrayList;

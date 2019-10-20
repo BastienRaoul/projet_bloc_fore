@@ -1,3 +1,5 @@
+// dev : Bastien RAOUL
+
 package test;
 
 import projetIUT_blocFore.ScannerFile;

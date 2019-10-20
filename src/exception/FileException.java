@@ -1,3 +1,5 @@
+// dev : Bastien RAOUL
+
 package exception;
 
 public class FileException extends Exception {

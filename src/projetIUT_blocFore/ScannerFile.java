@@ -1,3 +1,5 @@
+// dev : Bastien RAOUL
+
 package projetIUT_blocFore;
 
 import java.io.File;
@@ -101,22 +103,22 @@ public class ScannerFile {
 
 		}
 		if (!face6) {
-			resultat.add(0, "Face 6 non dÃ©clarÃ©");
+			resultat.add(0, "Face 6 non déclarée");
 		}
 		if (!face5) {
-			resultat.add(0, "Face 5 non dÃ©clarÃ©");
+			resultat.add(0, "Face 5 non déclarée");
 		}
 		if (!face4) {
-			resultat.add(0, "Face 4 non dÃ©clarÃ©");
+			resultat.add(0, "Face 4 non déclarée");
 		}
 		if (!face3) {
-			resultat.add(0, "Face 3 non dÃ©clarÃ©");
+			resultat.add(0, "Face 3 non déclarée");
 		}
 		if (!face2) {
-			resultat.add(0, "Face 2 non dÃ©clarÃ©");
+			resultat.add(0, "Face 2 non déclarée");
 		}
 		if (!face1) {
-			resultat.add(0, "Face 1 non dÃ©clarÃ©");
+			resultat.add(0, "Face 1 non déclarée");
 		}
 
 		input.close();

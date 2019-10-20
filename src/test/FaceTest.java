@@ -1,3 +1,5 @@
+// dev : Rémi THOMAS
+
 package test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -70,8 +72,8 @@ class FaceTest {
 		drillings.add(new DrillingMock(19, 10, 0, 50, 4));
 		face.addDrillings(drillings);
 		
-		String errMsg = face.verifyOwnDrillings();
-		System.out.println("errMsg 1 : " + errMsg);
+		String errMsg = face.inspectOwnDrillings()[0];
+		//System.out.println("errMsg 1 : " + errMsg);
 		assertTrue(errMsg.equals("\n[Espacement - Same face] (20, 10, 0, 50, 4) with (19, 10, 0, 50, 4)"), "drillings are not enough horizontally spaced");
 	}
 	
@@ -82,8 +84,8 @@ class FaceTest {
 		drillings.add(new DrillingMock(20, 9, 0, 50, 4));
 		face.addDrillings(drillings);
 		
-		String errMsg = face.verifyOwnDrillings();
-		System.out.println("errMsg 2 : " + errMsg);
+		String errMsg = face.inspectOwnDrillings()[0];
+		//System.out.println("errMsg 2 : " + errMsg);
 		assertTrue(errMsg.equals("\n[Espacement - Same face] (20, 10, 0, 50, 4) with (20, 9, 0, 50, 4)"), "drillings are not enough vertically spaced");
 	}
 	
@@ -94,7 +96,7 @@ class FaceTest {
 		drillings.add(new DrillingMock(20, 13, 0, 50, 1));
 		face.addDrillings(drillings);
 		
-		String errMsg = face.verifyOwnDrillings();
+		String errMsg = face.inspectOwnDrillings()[0];
 		//System.out.println("errMsg : " + errMsg);
 		assertTrue(errMsg.equals(""), "drillings are enough spaced");
 	}
@@ -105,9 +107,9 @@ class FaceTest {
 		drillings.add(new DrillingMock(2, 2, 0, 50, 5));
 		face.addDrillings(drillings);
 		
-		String errMsg = face.verifyOwnDrillings();
+		String errMsg = face.inspectOwnDrillings()[0];
 		//System.out.println("errMsg : " + errMsg);
-		assertTrue(errMsg.equals("\n[Espacement - Same face] (2, 2, 0, 50, 5)"), "Drilling too close from top and left sides");
+		assertTrue(errMsg.equals("\n[Espacement - Edges] (2, 2, 0, 50, 5)"), "Drilling too close from top and left sides");
 	}
 	
 	@Test
@@ -116,9 +118,9 @@ class FaceTest {
 		drillings.add(new DrillingMock(-2, 30, 0, 50, 5));
 		face.addDrillings(drillings);
 		
-		String errMsg = face.verifyOwnDrillings();
+		String errMsg = face.inspectOwnDrillings()[0];
 		//System.out.println("errMsg : " + errMsg);
-		assertTrue(errMsg.equals("\n[Espacement - Same face] (-2, 30, 0, 50, 5)"), "Drilling too close from left side");
+		assertTrue(errMsg.equals("\n[Espacement - Edges] (-2, 30, 0, 50, 5)"), "Drilling too close from left side");
 	}
 	
 	@Test
@@ -127,9 +129,9 @@ class FaceTest {
 		drillings.add(new DrillingMock(-20, 10, 0, 50, 5));
 		face.addDrillings(drillings);
 		
-		String errMsg = face.verifyOwnDrillings();
+		String errMsg = face.inspectOwnDrillings()[0];
 		//System.out.println("errMsg : " + errMsg);
-		assertTrue(errMsg.equals("\n[Espacement - Same face] (-20, 10, 0, 50, 5)"), "Drilling is outside the block");
+		assertTrue(errMsg.equals("\n[Espacement - Edges] (-20, 10, 0, 50, 5)"), "Drilling is outside the block");
 	}
 	
 	@Test
@@ -138,9 +140,9 @@ class FaceTest {
 		drillings.add(new DrillingMock(10, 70, 0, 50, 5));
 		face.addDrillings(drillings);
 		
-		String errMsg = face.verifyOwnDrillings();
+		String errMsg = face.inspectOwnDrillings()[0];
 		//System.out.println("errMsg : " + errMsg);
-		assertTrue(errMsg.equals("\n[Espacement - Same face] (10, 70, 0, 50, 5)"), "Drilling too close from top side");
+		assertTrue(errMsg.equals("\n[Espacement - Edges] (10, 70, 0, 50, 5)"), "Drilling too close from top side");
 	}
 	
 	@Test
@@ -149,9 +151,9 @@ class FaceTest {
 		drillings.add(new DrillingMock(70, 10, 0, 50, 5));
 		face.addDrillings(drillings);
 		
-		String errMsg = face.verifyOwnDrillings();
+		String errMsg = face.inspectOwnDrillings()[0];
 		//System.out.println("errMsg : " + errMsg);
-		assertTrue(errMsg.equals("\n[Espacement - Same face] (70, 10, 0, 50, 5)"), "Drilling too close from right side");
+		assertTrue(errMsg.equals("\n[Espacement - Edges] (70, 10, 0, 50, 5)"), "Drilling too close from right side");
 	}
 	
 	@Test
@@ -160,9 +162,9 @@ class FaceTest {
 		drillings.add(new DrillingMock(-20, 10, 0, 50, 5));
 		face.addDrillings(drillings);
 		
-		String errMsg = face.verifyOwnDrillings();
+		String errMsg = face.inspectOwnDrillings()[0];
 		//System.out.println("errMsg : " + errMsg);
-		assertTrue(errMsg.equals("\n[Espacement - Same face] (-20, 10, 0, 50, 5)"), "Drilling too close from bottom side");
+		assertTrue(errMsg.equals("\n[Espacement - Edges] (-20, 10, 0, 50, 5)"), "Drilling too close from bottom side");
 	}
 	
 	@Test
@@ -171,7 +173,7 @@ class FaceTest {
 		drillings.add(new DrillingMock(5, 5, 0, 50, 2));
 		face.addDrillings(drillings);
 		
-		String errMsg = face.verifyOwnDrillings();
+		String errMsg = face.inspectOwnDrillings()[0];
 		//System.out.println("errMsg : " + errMsg);
 		assertTrue(errMsg.equals(""), "The drilling belongs to the face");
 	}
@@ -182,7 +184,7 @@ class FaceTest {
 		drillings.add(new DrillingMock(20, 20, 10, 50, 1));
 		face.addDrillings(drillings);
 		
-		String errMsg = face.verifyOwnDrillings();
+		String errMsg = face.inspectOwnDrillings()[0];
 		//System.out.println("errMsg : " + errMsg);
 		assertTrue(errMsg.equals("\n[Depth] (20, 20, 10, 50, 1) starts inside the block without \"parent drilling\""), "The drilling starts inside the block without parent");
 	}
@@ -196,7 +198,7 @@ class FaceTest {
 		drillings.add(new DrillingMock(25, 20, 0, 30, 2));
 		face.addDrillings(drillings);
 		
-		String errMsg = face.verifyOwnDrillings();
+		String errMsg = face.inspectOwnDrillings()[0];
 		//System.out.println("errMsg : " + errMsg);
 		assertTrue(errMsg.equals("\n[Depth] (25, 20, 50, 30, 1) starts inside the block without \"parent drilling\""), "Another drilling encompass the first one but doesn't reach it");
 	}
@@ -208,7 +210,7 @@ class FaceTest {
 		drillings.add(new DrillingMock(30, 18, 0, 40, 6));
 		face.addDrillings(drillings);
 		
-		String errMsg = face.verifyOwnDrillings();
+		String errMsg = face.inspectOwnDrillings()[0];
 		//System.out.println("errMsg : " + errMsg);
 		assertTrue(errMsg.equals(""), "Encompassed by an excentred drill");
 	}
@@ -220,7 +222,7 @@ class FaceTest {
 		drillings.add(new DrillingMock(35, 20, 0, 40, 1));
 		face.addDrillings(drillings);
 		
-		String errMsg = face.verifyOwnDrillings();
+		String errMsg = face.inspectOwnDrillings()[0];
 		//System.out.println("errMsg : " + errMsg);
 		assertTrue(errMsg.equals("\n[Depth] (35, 20, 30, 30, 2) starts inside the block without \"parent drilling\""), "An inside drilling is reached by a smaller one");
 	}
@@ -237,7 +239,7 @@ class FaceTest {
 		
 		face.addDrillings(drillings);
 		
-		String errMsg = face.verifyOwnDrillings();
+		String errMsg = face.inspectOwnDrillings()[0];
 		//System.out.println("errMsg : " + errMsg);
 		assertTrue(errMsg.equals(""), "The drilling is parented by many others");
 	}
