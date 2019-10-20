@@ -93,4 +93,9 @@ public class Drilling implements DrillingInterface {
 	public void setTestedDrillingsIntersects(List<Drilling> testedDrillingsIntersects) {
 		this.testedDrillingsIntersects = testedDrillingsIntersects;
 	}
+
+	@Override
+	public Face getFace() {
+		return face;
+	}
 }

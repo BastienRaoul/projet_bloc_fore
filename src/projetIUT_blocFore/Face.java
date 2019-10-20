@@ -10,20 +10,24 @@ public class Face {
 	
 	private static int id = 0;
 	private int[] dimensions;
-	private int[] rotation = new int[3];
+	//private int[] rotation = new int[3];
+	private String normalDir; // Direction of the normal (- or +)
+	private int normal; // The normal of the face (0 or 1 or 2 => x, y, z)
 	private ArrayList<DrillingInterface> drillings = new ArrayList<>();
 	
-	public Face(int dimX, int dimY, int rotX, int rotY, int rotZ) {
+	public Face(int dimX, int dimY, String normalDir, int normal/*int rotX, int rotY, int rotZ*/) {
 		id++;
 		dimensions = new int[] {dimX, dimY};
-		rotation = new int[] {rotX, rotY, rotZ};
+		//rotation = new int[] {rotX, rotY, rotZ};
+		this.normalDir = normalDir;
+		this.normal = normal;
 	}
 	
 	public void addDrillings(ArrayList<DrillingInterface> drillings) {
 		this.drillings.addAll(drillings);
 	}
 	
-	public String verifyCoplanarDrillings() {
+	public String verifyOwnDrillings() {
 		String errors = "";
 		
 		errors += verifyEspacement();
@@ -41,11 +45,11 @@ public class Face {
 			// Verify espacement with edges
 			if (drilling.getFaceCoords()[0] - drilling.getDiameter()/2 < MIN_DRILL_ESPACEMENT ||		// (left and bottom sides)
 					drilling.getFaceCoords()[1] - drilling.getDiameter()/2 < MIN_DRILL_ESPACEMENT) {
-				errors += "\n[Espacement] " + drilling.toString();
+				errors += "\n[Espacement - Same face] " + drilling.toString();
 			}
 			if (dimensions[0] - (drilling.getFaceCoords()[0] + drilling.getDiameter()/2) < MIN_DRILL_ESPACEMENT ||		// (right and top sides)
 					dimensions[1] - (drilling.getFaceCoords()[1] + drilling.getDiameter()/2) < MIN_DRILL_ESPACEMENT) {
-				errors += "\n[Espacement] " + drilling.toString();
+				errors += "\n[Espacement - Same face] " + drilling.toString();
 			}
 			
 			// Verify espacement with other drillings
@@ -58,24 +62,14 @@ public class Face {
 				//System.out.println("Dist btwn " + drilling.toString() + "/" + otherDrill.toString() + "\n = " + centersEspacement);
 				float drillingsEspacement = centersEspacement - drilling.getDiameter()/2 - otherDrill.getDiameter()/2;
 				if (drillingsEspacement < MIN_DRILL_ESPACEMENT) { // If drillings are too close
-					if (!areEncompassed(drilling, otherDrill, centersEspacement)) {
-						errors += "\n[Espacement] " + drilling.toString() + " with " + otherDrill.toString();
+					if (!Utils.areEncompassed(drilling, otherDrill, centersEspacement)) {
+						errors += "\n[Espacement - Same face] " + drilling.toString() + " with " + otherDrill.toString();
 					}
 				}
 			}
 		}
 		
-		return errors;
-	}
-	
-	private boolean areEncompassed(DrillingInterface drilling, DrillingInterface otherDrill, float espacement) {
-	// True if a radius is greater than the sum of the other radius and the espacement
-		float r1 = drilling.getDiameter()/2;
-		float r2 = otherDrill.getDiameter()/2;
-		if (r1 >= r2 + espacement || r2 >= r1 + espacement) {
-			return true;
-		}
-		return false;
+		return errors;  
 	}
 	
 	private String verifyDepth() {
@@ -133,11 +127,34 @@ public class Face {
 		drillings.clear();
 	}
 	
-	public int[] getRotation() {
+	/*public int[] getRotation() {
 		return rotation;
-	}
+	}*/
 	
 	public int getId() {
 		return id;
+	}
+	
+	public String getNormalDir() {
+		return normalDir;
+	}
+	
+	public int getNormal() {
+		return normal;
+	}
+	
+	/**
+	 * @return
+	 * Axes that are not the normal
+	 */
+	public int[] getAxesUsed() {
+		int index = 0;
+		int axes[] = new int[2];
+		for (int i = 0; i < 3; i++) {
+			if (i != Math.abs(normal)) {
+				axes[index++] = i;
+			}
+		}
+		return axes;
 	}
 }

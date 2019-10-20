@@ -1,6 +1,5 @@
 package mock;
 
-import projetIUT_blocFore.Block;
 import projetIUT_blocFore.Face;
 
 public class DrillingMock implements DrillingInterface {
@@ -38,6 +37,12 @@ public class DrillingMock implements DrillingInterface {
 	@Override
 	public String toString() {
 		return ("(" + faceCoords[0] + ", " + faceCoords[1] + ", " + faceCoords[2] + ", " + depth + ", " + diameter + ")");
+	}
+
+	@Override
+	public Face getFace() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }
