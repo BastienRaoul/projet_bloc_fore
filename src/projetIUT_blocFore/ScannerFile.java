@@ -1,127 +1,133 @@
-// dev : Bastien RAOUL
+// dev : Remi THOMAS
 
 package projetIUT_blocFore;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Scanner;
+import java.util.HashMap;
 import java.util.regex.Pattern;
 
-public class ScannerFile {
-	private File file;
-	private Scanner input;
-	private ArrayList<String> resultat = new ArrayList<String>();
-	private Boolean face1 = false;
-	private Boolean face2 = false;
-	private Boolean face3 = false;
-	private Boolean face4 = false;
-	private Boolean face5 = false;
-	private Boolean face6 = false;
-	private Block block;
+import mock.DrillingInterface;
 
-	public ScannerFile(String path) {
+public class ScannerFile {
+	
+	private File file;
+	private String data = "";
+	
+	private Block block;
+	private HashMap<Integer, ArrayList<DrillingInterface>> drillings = new HashMap<>();
+
+	public ScannerFile(String path) {		
+		
 		try {
-			input = new Scanner(path);
-			file = new File(input.nextLine());
-		} catch (Exception ex) {
-			ex.printStackTrace();
+			file = new File(path);
+			
+			BufferedReader br;
+			br = new BufferedReader(new FileReader(file));
+			String line;
+			
+			while ((line = br.readLine()) != null) {
+				data += line;
+			}
+			
+			br.close();
+			
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
-	}
- 
-	/**
-	 * 
-	 * @return the file
-	 */
-	public File getFile() {
-		return file;
 	}
 	
 	/**
 	 * 
-	 * @return a boolean allowing to know if the file is written correctly
-	 * @throws FileNotFoundException
+	 * @return a boolean which indicates if the file is well structured
 	 */
-	public Boolean validStructure() throws FileNotFoundException {
-		Boolean result = false;
-		ArrayList<String> text = verifStructureFile();
-		result = text.isEmpty() ? true : false;
-		return result;
-	}
+	public boolean deserializeData() {
 
-	/**
-	 * 
-	 * @return an ArrayList with every line of the file
-	 * @throws FileNotFoundException
-	 */
-	public ArrayList<String> getLignes() throws FileNotFoundException {
-		ArrayList<String> lignes = new ArrayList<String>();
-		input = new Scanner(file);
-		while (input.hasNextLine()) { lignes.add(input.nextLine()); }
-		return lignes;
-	}
-
-	/**
-	 * 
-	 * @return an ArrayList with the errors in the file
-	 * @throws FileNotFoundException
-	 */
-	public ArrayList<String> verifStructureFile() throws FileNotFoundException {
-		input = new Scanner(file);
-		ArrayList<String> lignes = getLignes();
-
-		if (!Pattern.compile("([0-9]+\\s*[;]\\s*){2}[0-9]+$").matcher(lignes.get(0)).find()) {
-			resultat.add("Erreur de syntaxe -> " + lignes.get(0));
-		} else {
-			String ligne = lignes.get(0);			
-	        String mots[] = ligne.split(" ");	 
-	        ArrayList<String> values = new ArrayList<String>();
-	        for (String i : mots) { values.add(i); }	        
-//	        bloc = new Bloc(Float.parseFloat(values.get(0)), Float.parseFloat(values.get(2)), Float.parseFloat(values.get(4)));
-		}
-
-		lignes.remove(0);
-
-		for (String ligne : lignes) {
-			if (!Pattern.compile("[A-Z]+[0-9]$").matcher(ligne).find()) {
-				if (!Pattern.compile("([0-9]+[,]\\s){4}[0-9]+$").matcher(ligne).find()) {
-					resultat.add("Erreur de syntaxe -> " + ligne);					
+		if (!Pattern.compile("([1-9][0-9]*\\s*;\\s*){2}[1-9][0-9]*(\\r*FACE\\s*[1-6]\\r*(([-0-9]+\\s*,\\s*){4}[1-9][0-9]*\\r*)+){1,6}").matcher(data).find()) return false;
+		// I didn't find how to say where it didn't match
+		
+		System.out.println("File OK");
+		
+		try {
+			BufferedReader br;
+			br = new BufferedReader(new FileReader(file));
+			String line;
+			
+			int idCurrentFace = 0;
+			while ((line = br.readLine()) != null) {
+				
+				// Create the block
+				if (Pattern.compile("(\\s*[1-9][0-9]*\\s*;\\s*){2}[1-9][0-9]*").matcher(line).find()) {
+					createBlock(line);
+					
+				// Set the current face to add the following drilling to it
+				} else if (Pattern.compile("\\s*FACE\\s*[1-6]\\s*").matcher(line).find()) {
+					int length = line.length();
+					idCurrentFace = Integer.parseInt(line.replaceAll("\\s", "").substring(length-1, length));
+					System.out.println("Entering face " + idCurrentFace + " data");
+				
+				// Create a drilling for the concerned face
+				} else if (Pattern.compile("\\s*([-0-9]+\\s*,\\s*){4}[1-9][0-9]*\\s*").matcher(line).find()) {
+					createDrillingForFace(line, idCurrentFace);
 				}
-			} else if (Pattern.compile("FACE1").matcher(ligne).find()) {
-				face1 = true;
-			} else if (Pattern.compile("FACE2").matcher(ligne).find()) {
-				face2 = true;
-			} else if (Pattern.compile("FACE3").matcher(ligne).find()) {
-				face3 = true;
-			} else if (Pattern.compile("FACE4").matcher(ligne).find()) {
-				face4 = true;
-			} else if (Pattern.compile("FACE5").matcher(ligne).find()) {
-				face5 = true;
-			} else if (Pattern.compile("FACE6").matcher(ligne).find()) {
-				face6 = true;
 			}
-
+			
+			// Add all drillings the their corresponding face
+			for (int i = 0; i < drillings.size(); i++) {
+				block.getFace(i).addDrillings(drillings.get(i));
+			}
+			
+			br.close();
+			
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
-		if (!face6) {
-			resultat.add(0, "Face 6 non déclarée");
+		
+		return true;
+	}
+	
+	private void createBlock(String data) {
+		
+		System.out.println("Creating block with : " + data);
+		String[] dimStr = data.replaceAll("\\s", "").split(";");
+		int[] dim = new int[dimStr.length];
+		
+		for (int i = 0; i < dimStr.length; i++) {
+			dim[i] = Integer.parseInt(dimStr[i]);
 		}
-		if (!face5) {
-			resultat.add(0, "Face 5 non déclarée");
+		
+		block = new Block(dim[0], dim[1], dim[2]);
+		
+		System.out.println("Block created");
+	}
+	
+	private void createDrillingForFace(String data, int idFace) {
+		
+		System.out.println("Creating drilling for face " + idFace + " with : " + data);
+		String[] paramStr = data.replaceAll("\\s", "").split(",");
+		int[] param = new int[paramStr.length];
+		
+		for (int i = 0; i < paramStr.length; i++) {
+			param[i] = Integer.parseInt(paramStr[i]);
 		}
-		if (!face4) {
-			resultat.add(0, "Face 4 non déclarée");
-		}
-		if (!face3) {
-			resultat.add(0, "Face 3 non déclarée");
-		}
-		if (!face2) {
-			resultat.add(0, "Face 2 non déclarée");
-		}
-		if (!face1) {
-			resultat.add(0, "Face 1 non déclarée");
-		}
-
-		input.close();
-		return resultat;
+		
+		int[] coords = {param[0], param[1], param[2]}; // x, y, z of the drilling / the rest is depth and diameter
+		DrillingInterface drilling = new Drilling(block, block.getFace(idFace-1), coords, param[3], param[4]);
+		
+		ArrayList<DrillingInterface> newDrillingList = drillings.get(idFace);
+		newDrillingList.add(drilling);
+		drillings.put(idFace, newDrillingList);
+	}
+	
+	public Block getBlock() {
+		return block;
 	}
 }

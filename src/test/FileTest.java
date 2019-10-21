@@ -16,7 +16,12 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.io.FileNotFoundException;
 
 public class FileTest {
-	private JFileChooser dialogue;
+	
+	
+	// DEPRECATED
+	
+	
+	/*private JFileChooser dialogue;
 	private ScannerFile scannerFile;
 	
 	@BeforeEach
@@ -59,5 +64,5 @@ public class FileTest {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
-	}
+	}*/
 }

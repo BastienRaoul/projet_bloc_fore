@@ -20,7 +20,7 @@ public class Block {
 		dimensions[2] = z;
 		createFaces();
 		//createIntersectionFaces(); // To execute after the creation of the drillings 
-		Arrays.fill(isIntersectionCreated, false); // A matrix to not create back intersections (eg: face A with B then face B with A)
+		//Arrays.fill(isIntersectionCreated, false); // A matrix to not create back intersections (eg: face A with B then face B with A)
 	}
 
 	private void createFaces() {
@@ -260,5 +260,9 @@ public class Block {
 	
 	public int[] getDimensions() {
 		return dimensions;
+	}
+	
+	public Face getFace(int index) {
+		return faces[index];
 	}
 }
