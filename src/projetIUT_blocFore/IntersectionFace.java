@@ -5,8 +5,6 @@ package projetIUT_blocFore;
 import java.util.Arrays;
 import java.util.List;
 
-import mock.DrillingInterface;
-
 public class IntersectionFace {
 	private Face faceX;
 	private List<DrillingInterface> drillingsX;

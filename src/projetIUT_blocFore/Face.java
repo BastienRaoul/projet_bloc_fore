@@ -4,8 +4,6 @@ package projetIUT_blocFore;
 
 import java.util.ArrayList;
 
-import mock.DrillingInterface;
-
 public class Face {
 	
 	private int MIN_DRILL_ESPACEMENT = 1; // in millimeters

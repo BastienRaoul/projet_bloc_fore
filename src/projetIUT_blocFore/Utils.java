@@ -2,8 +2,6 @@
 
 package projetIUT_blocFore;
 
-import mock.DrillingInterface;
-
 public class Utils {
 
 	public static float getDistance(float x1, float y1, float x2, float y2) {

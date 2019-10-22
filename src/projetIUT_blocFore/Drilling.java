@@ -5,8 +5,6 @@ package projetIUT_blocFore;
 import java.util.ArrayList;
 import java.util.List;
 
-import mock.DrillingInterface;
-
 public class Drilling implements DrillingInterface {
 	
 	private Block block;

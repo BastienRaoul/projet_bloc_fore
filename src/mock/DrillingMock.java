@@ -2,6 +2,7 @@
 
 package mock;
 
+import projetIUT_blocFore.DrillingInterface;
 import projetIUT_blocFore.Face;
 
 public class DrillingMock implements DrillingInterface {

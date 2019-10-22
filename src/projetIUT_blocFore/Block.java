@@ -4,8 +4,6 @@ package projetIUT_blocFore;
 
 import java.util.Arrays;
 
-import mock.DrillingInterface;
-
 public class Block {
 	
 	private int MIN_DRILL_ESPACEMENT = 1;

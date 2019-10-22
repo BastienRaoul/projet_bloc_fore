@@ -11,8 +11,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.regex.Pattern;
 
-import mock.DrillingInterface;
-
 public class ScannerFile {
 	
 	private File file;

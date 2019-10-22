@@ -14,8 +14,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import mock.DrillingInterface;
 import mock.DrillingMock;
+import projetIUT_blocFore.DrillingInterface;
 import projetIUT_blocFore.Face;
 
 class FaceTest {
