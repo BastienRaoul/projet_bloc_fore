@@ -13,19 +13,3 @@ These instructions will get you a copy of the project up and running on your loc
 ```
 git clone https://github.com/BastienRaoul/projet_bloc_fore.git
 ```
-
-2. 
-
-3. 
-
-4. 
-
-```
-Enjoy :)
-```
-
-## Built With
-
-* Java
-* 
-* 
